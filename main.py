@@ -51,6 +51,26 @@ def main():
         # st.write(corpus_chunks)
         name_extr = corpus.name[:-4]
 
+        if os.path.exists(f"{name_extr}.pkl"):
+            with open(f"{name_extr}.pkl", "rb") as f:
+                vectorstore = pickle.load(f)
+            # st.write("Embeddings loaded from the disk")
+        else:
+            corpus_embeddings = OpenAIEmbeddings(model_name="ada")
+            vectorstore = FAISS.from_texts(corpus_chunks, embedding=corpus_embeddings)
+            with open(f"{name_extr}.pkl", "wb") as f:
+                pickle.dump(vectorstore, f)
+        query = st.text_input("Ask anything related to your submission!")
+        # st.write(query)
+        if query:
+            result = vectorstore.similarity_search(query=query, k=3)
+            # st.write(result)
+            llm = OpenAI(temperature=0, model_name="text-davinci-003")
+            chain = load_qa_chain(llm=llm, chain_type="stuff")
+            with get_openai_callback() as cb:
+                response = chain.run(input_documents=result, question=query)
+            print(cb)
+            st.write(response)
 
 
 if __name__ == '__main__':
