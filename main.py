@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
+import streamlit_customs
 import pickle
+from streamlit_lottie import st_lottie
 import streamlit as st
 from streamlit_extras.add_vertical_space import add_vertical_space
 from PyPDF2 import PdfReader
@@ -8,20 +10,21 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import FAISS
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
-from langchain.callbacks import get_openai_callback
-
 import os
+
+streamlit_customs.set_background('solid-concrete-wall-textured-background.jpg')
 
 load_dotenv()
 
 with st.sidebar:
+    st_lottie("https://lottie.host/958e44de-a969-4be8-a395-5e994f2f1082/mgJm3mLnY2.json")
     st.title('New user corpus chat appliction')
-    st.write('Made by Aman Singh')
+    st.write('Made by 😄 [Aman Singh](https://github.com/AmanDoesntCode)')
 
     add_vertical_space(3)
     st.markdown('''
     ## About this project:
-    this application is a LLM-powered made with:
+    this application is a LLM-powered project made with:
     - [Streamlit](https://streamlit.io/)
     - [LangChain](https://python.langchain.com/)
     - [OpenAI](https://platform.openai.com/docs/models)  LLM Model,embeder and text generator
@@ -67,9 +70,7 @@ def main():
             # st.write(result)
             llm = OpenAI(temperature=0, model_name="text-davinci-003")
             chain = load_qa_chain(llm=llm, chain_type="stuff")
-            with get_openai_callback() as cb:
-                response = chain.run(input_documents=result, question=query)
-            print(cb)
+            response = chain.run(input_documents=result, question=query)
             st.write(response)
 
 
